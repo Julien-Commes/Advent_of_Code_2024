@@ -1,4 +1,5 @@
 from copy import copy
+from datetime import datetime
 
 def bitwise_XOR(A, B):
     binary_A = bin(A)[2:]
@@ -20,6 +21,8 @@ def bitwise_XOR(A, B):
     
     return int(new_bin, 2)
 
+init_time = datetime.now()
+
 possible_A_curr_loop = [1, 2, 3, 4, 5, 6, 7]
 test_program = [2,4,1,5,7,5,1,6,0,3,4,6,5,5,3,0]
 test_program.reverse()
@@ -39,7 +42,9 @@ for k in range(len(test_program)):
 
         if candidate_B%8 == output:
             if k == len(test_program) - 1:
-                print(candidate_A) 
+                print(candidate_A)
+                end_time = datetime.now()
+                print(end_time - init_time) 
             if candidate_A * 8 not in possible_A_next_loop:
                 possible_A_next_loop.append(candidate_A * 8)
                 possible_A_next_loop.append(candidate_A * 8 + 1)

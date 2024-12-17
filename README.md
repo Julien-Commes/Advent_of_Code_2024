@@ -32,7 +32,6 @@ While A > 0:
     B -> bitwise(bitwiseXOR(B, 6), C)
     A -> floor(A/8)
     Output B % 8
-
 ``` 
 
 At first I had elaborated a method to go from the value of the output and find the possible values of A creating this output, but it turns out that just trying every possible A of the current iteration and comparing the produced result with the expected output value is "fast enough" (less than a second on my computer).
@@ -42,5 +41,5 @@ The approach was as following:
 * Each iteration A = A//8, meaning that if A of the current iteration is i, the A of the previous iteration is included in [i * 8; i * 8 - 1]
 * At the end of the last iteration A = 0, meaning that A at the end of the previous iteration was included in [1; 7]
 * We try every possible A in [1; 7] and check if the output generated correspond to the last one of the expected output. 
-* * If yes, we add [A * 8; A * 8 - 1] to the list of potential A candidates in previous iteration
+  * If yes, we add [A * 8; A * 8 - 1] to the list of potential A candidates in previous iteration
 * We continue through each iterations until we reach the first iteration.

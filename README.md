@@ -43,3 +43,9 @@ The approach was as following:
 * We try every possible A in [1; 7] and check if the output generated correspond to the last one of the expected output. 
   * If yes, we add [A * 8; A * 8 - 1] to the list of potential A candidates in previous iteration
 * We continue through each iterations until we reach the first iteration.
+
+## Day 18
+
+Yet another 2D puzzle! This time, it was much easier — a straightforward A* algorithm with the Euclidean distance (L2) heuristic worked perfectly.
+
+For part 2, brute-forcing the problem by running an A* search for each new corrupted location turned out to be fast enough. A quick optimization could be skipping the search if the corrupted byte doesn’t fall on the previously discovered path. I should also clean up the code since it’s just a modified copy-paste from day 16.

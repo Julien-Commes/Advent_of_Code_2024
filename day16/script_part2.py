@@ -3,101 +3,90 @@ import math
 import heapq
 
 # Define the size of the grid
-ROW = 14
-COL = 14
+ROW = 141
+COL = 141
 
-max_cost = 100000
+max_cost = 107512
 
 # Define the Cell class
 class Cell:
     def __init__(self):
       # Parent cell's row index
-        self.parent_i = [0]
+        self.parent_i = []
     # Parent cell's column index
-        self.parent_j = [0]
+        self.parent_j = []
     # Parent cell's orientation
-        self.parent_orientation = [0]
+        self.parent_orientation = []
     # Total cost of the cell (g + h)
         self.cost = float('inf')
 
 # Check if a cell is valid (within the grid)
-
 def is_valid(row, col):
     return (row >= 0) and (row < ROW) and (col >= 0) and (col < COL)
 
 # Check if a cell is unblocked
-
-
 def is_unblocked(grid, row, col):
     return grid[row][col] == '.' or grid[row][col] == 'S' or grid[row][col] == 'E'
 
 # Check if a cell is the destination
-
-
 def is_destination(row, col, dest):
     return row == dest[0] and col == dest[1]
 
-# Calculate the heuristic value of a cell (Euclidean distance to destination)
-
-
-def calculate_h_value(row, col, dest, orient):
-    match orient:
-        case 0:
-            h = abs(row - dest[0])+ abs(col - dest[1]) + 1000 * (row - dest[0] == 0)
-        case 1:
-            h = abs(row - dest[0]) + abs(col - dest[1]) + 1000 * (col - dest[1] == 0) + 1000 * (row - dest[0] == 0)
-        case 2:
-            h = abs(row - dest[0]) + abs(col - dest[1]) + 1000 * (row - dest[0] == 0) + 1000 * (col - dest[1] == 0) 
-        case 3:
-            h = abs(row - dest[0]) + abs(col - dest[1]) + 1000 * (col - dest[1] == 0)
-    #print(h, ((row - dest[0]) ** 2 + (col - dest[1]) ** 2) ** 0.5)
-    return h # --> To modify
-
 # Trace the path from source to destination
-
-
-def trace_path(cell_details, dest):
-    total = 0
-
-    print("The Path is ")
+def trace_path(cell_details, dest, grid):
     path = []
     row = dest[0]
     col = dest[1]
     orient = 0
     #print(row, col, orient)
+    paths_to_add = [(row, col, orient)]
 
-    # Trace the path from destination to source using parent cells
-    while not (cell_details[row][col][orient].parent_i[-1] == row and cell_details[row][col][orient].parent_j[-1] == col and cell_details[row][col][orient].parent_orientation[-1] == orient):
-        path.append((row, col, orient))
+    while len(paths_to_add) > 0:
+        p = paths_to_add.pop()
+        row, col, orient = p
 
-        print(cell_details[row][col][orient].parent_i, cell_details[row][col][orient].parent_j, cell_details[row][col][orient].parent_orientation)
-        temp_row = cell_details[row][col][orient].parent_i[-1]
-        temp_col = cell_details[row][col][orient].parent_j[-1]
-        temp_orient = cell_details[row][col][orient].parent_orientation[-1]
-        if row == dest[0] and col == dest[1]:
-            total += 1
-        elif temp_orient != orient:
-            total += 1000
-        else:
-            total += 1
-        row = temp_row
-        col = temp_col
-        orient = temp_orient
-        #print(temp_row, temp_col, temp_orient)
+        # Trace the path from destination to source using parent cells
+        while not (cell_details[row][col][orient].parent_i[-1] == row and cell_details[row][col][orient].parent_j[-1] == col and cell_details[row][col][orient].parent_orientation[-1] == orient):
+            path.append((row, col))
 
-    # Add the source cell to the path
-    path.append((row, col, orient))
-    # Reverse the path to get the path from source to destination
-    path.reverse()
+            if len(cell_details[row][col][orient].parent_i) > 1:
+                new_paths = []
+                for k in range(len(cell_details[row][col][orient].parent_i)):
+                    new_paths.append((cell_details[row][col][orient].parent_i[k], cell_details[row][col][orient].parent_j[k], cell_details[row][col][orient].parent_orientation[k]))
+                set_new_paths = set(new_paths) 
+                new_paths_unique = (list(set_new_paths))
+                for element in  new_paths_unique[:-1]:
+                    paths_to_add.append(element)
+                temp_row = new_paths_unique[-1][0]
+                temp_col = new_paths_unique[-1][1]
+                temp_orient = new_paths_unique[-1][2]
 
-    # Print the path
-    for i in path:
-        print("->", i, end=" ")
-    print(total)
+            else:
+                temp_row = cell_details[row][col][orient].parent_i[-1]
+                temp_col = cell_details[row][col][orient].parent_j[-1]
+                temp_orient = cell_details[row][col][orient].parent_orientation[-1]
+
+            row = temp_row
+            col = temp_col
+            orient = temp_orient
+
+        # Add the source cell to the path
+        path.append((row, col))
+        #print(path)
+    
+    set_tiles_on_paths = set(path) 
+    tiles_on_paths = (list(set_tiles_on_paths))
+    print("Number of tiles on shortest paths: ", len(tiles_on_paths)) #, tiles_on_paths)
+    
+    '''
+    for tiles in tiles_on_paths:
+        grid[tiles[0]][tiles[1]] = 'O'
+    for line in grid:
+        print(line)
+    '''
+    
 
 # Implement the A* search algorithm
-
-
 def a_star_search(grid, src, dest):
     # Check if the source and destination are valid
     if not is_valid(src[0], src[1]) or not is_valid(dest[0], dest[1]):
@@ -175,8 +164,15 @@ def a_star_search(grid, src, dest):
                     #print(open_list)
                     print("The destination cell is found")
                     # Trace and print the path from source to destination
-                    trace_path(cell_details, dest)
-                    return
+                    trace_path(cell_details, dest, grid)
+
+                    #for index_i, line in enumerate(cell_details):
+                        #for index_j, point in enumerate(line):
+                            #for index_rot, element in enumerate(point):
+                                #if len(element.parent_i) > 0:
+                                    #print("location:", index_i, index_j, index_rot)
+                                    #print(element.parent_i, element.parent_j, element.parent_orientation)
+                    return 
                 else:
                     # Calculate the new f, g, and h values
                     added_cost = 1.0
@@ -186,7 +182,7 @@ def a_star_search(grid, src, dest):
                     
                     #print(f_new, new_i, new_j, new_orient)
                     # If the cell is not in the open list or the new f value is smaller
-                    if (cell_details[new_i][new_j][new_orient].cost == float('inf') or cell_details[new_i][new_j][new_orient].cost >= new_cost) and new_cost <= max_cost:
+                    if (cell_details[new_i][new_j][new_orient].cost == float('inf') or cell_details[new_i][new_j][new_orient].cost == new_cost) and new_cost <= max_cost:
                         # Add the cell to the open list
                         heapq.heappush(open_list, (new_cost, new_i, new_j, new_orient))
                         # Update the cell details
@@ -194,6 +190,15 @@ def a_star_search(grid, src, dest):
                         cell_details[new_i][new_j][new_orient].parent_i.append(i)
                         cell_details[new_i][new_j][new_orient].parent_j.append(j)
                         cell_details[new_i][new_j][new_orient].parent_orientation.append(orientation)
+                    
+                    elif (cell_details[new_i][new_j][new_orient].cost == float('inf') or cell_details[new_i][new_j][new_orient].cost > new_cost) and new_cost <= max_cost:
+                        # Add the cell to the open list
+                        heapq.heappush(open_list, (new_cost, new_i, new_j, new_orient))
+                        # Update the cell details
+                        cell_details[new_i][new_j][new_orient].cost = new_cost
+                        cell_details[new_i][new_j][new_orient].parent_i = [i]
+                        cell_details[new_i][new_j][new_orient].parent_j = [j]
+                        cell_details[new_i][new_j][new_orient].parent_orientation = [orientation]
 
     # If the destination is not found after visiting all cells
     if not found_dest:
@@ -203,19 +208,20 @@ def a_star_search(grid, src, dest):
 
 
 def main():
-    grid=[]
+    grid=[['' for _ in range(COL)] for _ in range(ROW)]
 
     with open('input.txt') as file:
-        for line in file:
-            grid.append(line)
+        for index_i, line in enumerate(file):
+            for index_j, element in enumerate(line):
+                if element != '\n':
+                    grid[index_i][index_j] = element
 
     # Define the source and destination
-    src = [13, 1]
-    dest = [1, 13]
+    src = [139, 1]
+    dest = [1, 139]
 
     # Run the A* search algorithm
     a_star_search(grid, src, dest)
-
 
 if __name__ == "__main__":
     main()

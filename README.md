@@ -11,6 +11,17 @@ I just took a A* algorithm implementation (https://www.geeksforgeeks.org/a-searc
 
 It worked pretty well and fast enough however I did not find a way to change it in a way to solve part 2 so far. 
 
+### Part 2
+
+I am editing this part as I found where my mistake was. The script on part 1 was organised to function in 2 steps:
+1. Find the shortest path and register tiles per tiles the next tile on the path. 
+2. Start from the last tile (i.e. the targeted destination) and go back one tile at a time using the registered tiles on the path.
+
+The issue with this way of registering paths is that only one path can be registered as each tile on the path will point to ONLY ONE next tile. Therefore, I decided to register all the tiles leading to one tile in a list. This way, if a tile can be reached by two paths with the same cost, it will be registered in the list.
+
+Of course I had to change some parameters for the first step: The cost to current tile is directly computed as the f value, as we know after part 1 what is the cost of the shortest past, and the algorithm continue its search on a node if the cost value is equal to its currently registered one (if it is strictly lower than registered one, it means that the current complete path has a lower cost so we delete the paths previously registered one the next node). I also added a stop condition using the maximum cost (computed in part 1).
+
+On the second step, we use the same protocol but when a node (tile) has more than one previous tile leading to it, we register all these tiles in a pending list and continue our path tracing until reaching the start point. After that we restart from the first tile in the pending list and so on. 
 
 ## Day 17
 

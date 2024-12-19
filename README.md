@@ -60,3 +60,29 @@ The approach was as following:
 Yet another 2D puzzle! This time, it was much easier — a straightforward A* algorithm with the Euclidean distance (L2) heuristic worked perfectly.
 
 For part 2, brute-forcing the problem by running an A* search for each new corrupted location turned out to be fast enough. A quick optimization could be skipping the search if the corrupted byte doesn’t fall on the previously discovered path. I should also clean up the code since it’s just a modified copy-paste from day 16.
+
+## Day 19
+
+### Part 1
+
+In this problem we had to find if a pattern (e.g., 'abcba') could be built using given keys (e.g., 'ba' or 'abc') as many time as we wanted. The solution I wrote work as follow:
+
+1. We start at the beginning of the pattern and look in the keys if some of them correspond to the beginning of the pattern.
+-> For instance if keys = {'abc', 'a', 'ab', 'd'} and the pattern begins by 'abd', we can use two keys to start constructing the pattern.
+2. We create a word using the found keys.
+-> In the example we have 'a' and 'ab'
+3. We reiterate from the first element of the pattern not included in the current word until we create the whole pattern or could not continue
+-> In the example 'a' can not be completed to form 'abd' but we can add 'd' to 'ab' to form 'abd'
+4. If we were able to form at least one complete pattern we count it as feasible
+
+### Part 2 
+
+This time we have to count every combination that would create a feasible pattern. We could reuse the exact same algorithm but it would take too much time as we go from ~200 combinations (1 per feasible pattern) to create to ~ 1.10**14 combinations. The good thing is that most of the valid combinations from a same pattern are very similar in the way it is formed. 
+
+-> For instance if we use the keys {'ab', 'abc', 'c'}, 'ab' + 'c' will form 'abc' that is also an existing key. Therefore, if 'abc' is the beginning of a correct combination, so does 'ab' + 'c'. 
+
+This way I decided not to form all combinations but to construct all combinations GIVEN A SAME ROOT and add the number of root that created this combination
+
+-> In the example above, if 'abc' is the root of a correct combination, we don't had 1 but 2 to the total as we can achieve creating 'abc' in two ways.
+
+This method made the algorithm find the solution in less than a second!

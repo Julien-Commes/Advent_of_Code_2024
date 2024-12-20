@@ -86,3 +86,14 @@ This way I decided not to form all combinations but to construct all combination
 -> In the example above, if 'abc' is the root of a correct combination, we don't had 1 but 2 to the total as we can achieve creating 'abc' in two ways.
 
 This method made the algorithm find the solution in less than a second!
+
+## Day 20
+
+The script for today’s problem works for both part 1 and part 2, with the only difference being the maximum length of a cheat (```max_len_cheat``` variable). The approach is straightforward: first, find the path from start to end using an A* search (I choose to use A* as I already had the implementation from day 16 and day 18 available). Then, identify all possible shortcuts up to the specified maximum length that meet the criterion of minimum gained distance.
+
+To calculate the gained distance, we use the following idea:
+Since a shortcut (created by a cheat) can pass through any location on the grid, the shortest path between two points will always be a straight line. Therefore, the length of the shortest shortcut between two points on the original path is their L1 (Manhattan) distance. The gained distance is then the difference between the indexes of the two points in the original path and their L1 distance. The goal is to apply this formula to all pairs of points on the original path and select the ones that meet the minimum gained distance criterion.
+
+To speed up the process, bad candidates can be discarded before applying the formula. For example, pairs of points whose indexes in the original path are too close together (i.e., not separated by at least the minimum gained distance) can be skipped. Even if the shortcut length is zero, such pairs would not meet the gained distance requirement.
+
+With this optimization, the script runs in approximately 3.7 seconds on my laptop

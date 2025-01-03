@@ -1,32 +1,21 @@
 import numpy as np
+from datetime import datetime
 
-# Charger les données depuis le fichier txt
-data = np.loadtxt("input.txt")
+init_time = datetime.now()
 
-# Extraire les deux colonnes sous forme de listes
+data = np.loadtxt("input.txt", dtype=int)
+
 col1 = np.array(data[:, 0])
 col2 = np.array(data[:, 1])
-
-print("Colonne 1 :", col1[0])
-print("Colonne 2 :", col2[0])
 
 col1_sorted = np.sort(col1)
 col2_sorted = np.sort(col2)
 
+unique_keys, counts = np.unique(col2_sorted, return_counts=True)
+keys_dict = dict(zip(unique_keys, counts))
 
-print(col2.sum() - col1.sum(), np.sum(np.abs(col2_sorted-col1_sorted)))
+sum = np.sum([k * keys_dict.get(k, 0) for k in col1_sorted])
 
-keys_dict = {}
-
-for k in col2_sorted:
-    if k in keys_dict:
-        keys_dict[k] += 1
-    else:
-        keys_dict[k] = 1
-
-
-sum = 0
-for k in col1_sorted:
-    sum += k * keys_dict[k] if k in keys_dict else 0
-
-print(sum)
+print("Time elapsed:", datetime.now() - init_time)
+print("Total distance:", np.sum(np.abs(col1_sorted - col2_sorted)))
+print("Similarity score:", sum)

@@ -3,6 +3,14 @@ This repository the code I wrote to overcome AoC 2024 problems
 
 I'll try to detail later in the readme what was the approach day per day and the different traps I avoided/fell into.
 
+## Day 1-2
+
+Nothing to declare
+
+## Day 3
+
+Used RegEx to find the correct multiplications in the input.
+
 ## Day 16
 
 ### Part 1

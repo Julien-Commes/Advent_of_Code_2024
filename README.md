@@ -96,4 +96,12 @@ Since a shortcut (created by a cheat) can pass through any location on the grid,
 
 To speed up the process, bad candidates can be discarded before applying the formula. For example, pairs of points whose indexes in the original path are too close together (i.e., not separated by at least the minimum gained distance) can be skipped. Even if the shortcut length is zero, such pairs would not meet the gained distance requirement.
 
-With this optimization, the script runs in approximately 3.7 seconds on my laptop
+With this optimization, the script runs in approximately 3.7 seconds on my laptop.
+
+## Day 23
+
+Today's puzzle can be translated into graph theory as finding [cliques](https://en.wikipedia.org/wiki/Clique_(graph_theory)) from a given [edge list](https://en.wikipedia.org/wiki/Edge_list) with specific conditions.
+
+The naive approach is presented in `initial_script.py`. To summarize briefly, we use elements of the list of edges to create sets of three interconnected nodes by comparing the elements with incomplete and already created sets. The issue with this method is that the number of iterations needed to compare one element of the edge list with all created sets constantly increases. Therefore, I decided to look for existing algorithms in graph theory to solve this type of problem.
+
+The final approach I decided to follow involved creating an [adjacency matrix](https://en.wikipedia.org/wiki/Adjacency_matrix) from the edge list, then applying a built-in function from the Networkx library (as I have only a basic understanding of graph theory), and finally applying some conditions (only cliques with exactly 3 nodes and one starting with "t", and taking the clique of maximum length).

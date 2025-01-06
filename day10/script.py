@@ -1,4 +1,7 @@
 import numpy as np 
+from datetime import datetime
+
+init_time =  datetime.now()
 
 trail_map = np.loadtxt('input.txt', dtype=str)
 
@@ -13,7 +16,6 @@ trail_map = np.loadtxt('input.txt', dtype=str)
 
 def check_dirs(pos_x, pos_y, checked_map):
     level = int(checked_map[pos_y][pos_x]) + 1
-    #print(level)
     dirs = []
     min_dir = 5
     if pos_x < len(checked_map[0]) - 1 and int(checked_map[pos_y][pos_x + 1]) == level:
@@ -45,48 +47,52 @@ def move_position(pos_x, pos_y, dir):
             print('No valid direction')
     return pos_x, pos_y
 
-end_trail = 9
-trails=[[] for k in range(end_trail + 1)]
-total = 0
-part2 = False
+def find_number_trailheads(input_trail_map, part_2 = False):
+    number_trailheads = 0
+    end_trail = 9
+    trails=[[] for k in range(end_trail + 1)]
 
-for y, line in enumerate(trail_map):
-    for x, element in enumerate(line):
-        if element == '0':
-            reachables = []
-            futur_dir, trails[0] = check_dirs(x, y, trail_map)
+    for y, line in enumerate(input_trail_map):
+        for x, element in enumerate(line):
+            if element == '0':
+                reachables = []
+                futur_dir, trails[0] = check_dirs(x, y, input_trail_map)
             
-            if futur_dir != 5:
-                movs = [futur_dir]
-            index = 0
-
-            while len(movs) > 0:
-                x, y = move_position(x, y, movs[-1])
-                index += 1
-                #print(x, y)
-
-                futur_dir, trails[index] = check_dirs(x, y, trail_map)
-                #print(futur_dir, trails)
-
                 if futur_dir != 5:
-                    movs.append(futur_dir)
-                else:
-                    if index == end_trail:
-                        if part2 or (x, y) not in reachables:
-                            reachables.append((x, y))
+                    movs = [futur_dir]
+                index = 0
 
-                    descend = True
-                    while descend:
-                        index -= 1
-                        trails[index].pop(0)
-                        last_mov = movs.pop()
-                        x, y = move_position(x, y, (last_mov+2)%4)
-                        descend = len(trails[index]) == 0 and index > 0
+                while len(movs) > 0:
+                    x, y = move_position(x, y, movs[-1])
+                    index += 1
+
+                    futur_dir, trails[index] = check_dirs(x, y, input_trail_map)
+
+                    if futur_dir != 5:
+                        movs.append(futur_dir)
+                    else:
+                        if index == end_trail:
+                            if part_2 or (x, y) not in reachables:
+                                reachables.append((x, y))
+
+                        descend = True
+                        while descend:
+                            index -= 1
+                            trails[index].pop(0)
+                            last_mov = movs.pop()
+                            x, y = move_position(x, y, (last_mov+2)%4)
+                            descend = len(trails[index]) == 0 and index > 0
                     
-                    if index >= 0 and len(trails[index]) > 0:
-                        movs.append(trails[index][0])
+                        if index >= 0 and len(trails[index]) > 0:
+                            movs.append(trails[index][0])
             
-            total += len(reachables)
-            #print(reachables)
+                number_trailheads += len(reachables)
+    
+    return number_trailheads
 
-print(total)
+scores_of_trailheads = find_number_trailheads(trail_map)
+rating_of_trailheads = find_number_trailheads(trail_map, part_2=True)
+
+print("Time elapsed:", datetime.now() - init_time)
+print("Sum of the scores of all trailheads:", scores_of_trailheads)
+print("Sum of the ratings of all trailheads:", rating_of_trailheads)

@@ -1,10 +1,10 @@
 import copy
+from datetime import datetime
 
-map = {"X": [],
-       "^": [],
+init_time = datetime.now()
+
+map = {"^": [],
        "#": [],}
-
-candidates = []
 
 with open('input.txt', 'r') as file:
     i = 0
@@ -12,13 +12,9 @@ with open('input.txt', 'r') as file:
         for j, element in enumerate(line):
             if element in map:
                 map[element].append((i, j))
-            elif element == ".":
-                candidates.append((i, j))
         i += 1
 
 max_index_i, max_index_j = i, j + 1
-
-#print(max_index_i, max_index_j)
 
 def move_dir(row, col, dir):
     match dir:
@@ -34,38 +30,62 @@ def move_dir(row, col, dir):
             print("Not a valid direction: ", dir)
     return row, col
 
+def emulate_guard_route(border_i, border_j, tested_map, starting_i, starting_j, starting_direction, is_init=False):
+    i, j, direction = starting_i, starting_j, starting_direction
+    is_looping = False
 
-def test_build_candidates(original_map, candidates: list, max_index_i: int, max_index_j: int):
-    nb_looping = 0
-    for index, candidate in enumerate(candidates):
-        print(index, " out of ", len(candidates), end='\r')
-        is_looping = False
-        tested_map = copy.deepcopy(original_map)
-        tested_map["#"].append(candidate)
-        i, j = tested_map["^"][0]
-        direction = 0
+    if is_init:
+        futur_candidates = []
 
-       #print("candidate:", candidate)
-
-        while i < max_index_i and i >= 0 and j < max_index_j and j >= 0:
-            pot_i, pot_j = move_dir(i, j, direction)
-            if (pot_i, pot_j) in tested_map["#"]:
-                direction = (direction + 1) % 4
-            else:
-                i, j = pot_i, pot_j
-                if (pot_i, pot_j, direction) not in tested_map['X']:
-                    tested_map['X'].append((pot_i, pot_j, direction))
-                    #print((pot_i, pot_j, direction))
+    while i < border_i and i >= 0 and j < border_j and j >= 0:
+        pot_i, pot_j = move_dir(i, j, direction)
+        if (pot_i, pot_j) in tested_map['#']:
+            direction = (direction + 1) % 4
+        else:
+            i, j = pot_i, pot_j
+            if (pot_i, pot_j, direction) not in tested_map['X']:
+                if is_init:
+                    if (pot_i, pot_j) not in futur_candidates:
+                        tested_map['X'].append((pot_i, pot_j, direction))
+                        futur_candidates.append((pot_i, pot_j))
                 else:
-                    #print("looped at: ", (pot_i, pot_j, direction))
-                    is_looping = True
-                    i = -1
+                    tested_map['X'].append((pot_i, pot_j, direction))
+
+            else:
+                is_looping = True
+                i = -1
+    
+    return tested_map, is_looping
+
+def test_build_candidates(original_map, nb_candidates: int, candidates: list, max_index_i: int, max_index_j: int):
+    nb_looping = 0
+
+    for index, candidate in enumerate(candidates[1:]):
+        print(index + 1, " out of ", nb_candidates, end='\r')
+        tested_map = copy.deepcopy(original_map)
+        tested_map['#'].append((candidate[0], candidate[1]))
+        tested_map['X'] = candidates[:index + 1]
+        i, j, direction = tested_map['X'][-1]
+
+        _, is_looping = emulate_guard_route(max_index_i, max_index_j, tested_map, i, j, direction)
         
         nb_looping += is_looping
 
     return nb_looping
 
-#candidates = [(0,1),(0,2),(6,3)]
+i, j = map["^"][0]
+direction = 0
+map['X'] = [(i, j, direction)]
 
-nb_builds = test_build_candidates(map, candidates, max_index_i, max_index_j)
-print("\n", nb_builds)
+map, _= emulate_guard_route(max_index_i, max_index_j, map, i, j, direction, is_init=True)
+
+candidates = map['X']
+nb_distinct_positions = len(map['X']) - 1
+
+map['X'] = []
+
+nb_builds = test_build_candidates(map, nb_distinct_positions, candidates, max_index_i, max_index_j)
+
+print("Time elapsed:", datetime.now() - init_time)
+print("Number of distinct positions:", nb_distinct_positions)
+print("Number of positions creating loops:", nb_builds)

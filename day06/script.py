@@ -1,3 +1,7 @@
+from datetime import datetime
+
+init_time = datetime.now()
+
 map = {"X": [],
        "^": [],
        "#": [],}
@@ -12,8 +16,6 @@ with open('input.txt', 'r') as file:
 
 max_index_i, max_index_j = i, j + 1
 
-#print(max_index_i, max_index_j)
-
 def move_dir(row, col, dir):
     match dir:
         case 0:
@@ -25,11 +27,12 @@ def move_dir(row, col, dir):
         case 3:
             row, col = row, col - 1
         case _:
-            print("Not a valid direction: ", dir)
+            print("Not a valid direction:", dir)
     return row, col
 
 i, j = map["^"][0]
 direction = 0
+
 while i < max_index_i and i >= 0 and j < max_index_j and j >= 0:
     pot_i, pot_j = move_dir(i, j, direction)
     if (pot_i, pot_j) in map["#"]:
@@ -42,4 +45,5 @@ while i < max_index_i and i >= 0 and j < max_index_j and j >= 0:
 if map["^"][0] not in map['X']:
     map['X'].append(map["^"][0])
 
-print(len(map['X']) - 1, i, j, direction)
+print("Time elapsed:", datetime.now() - init_time)
+print("Number of distinct positions:", len(map['X']) - 1)

@@ -1,8 +1,7 @@
-'''
-This code is an attempt I made before realizing we do not apply operations order rules
-'''
-
 import re
+from datetime import datetime
+
+init_time = datetime.now()
 
 def generate_binaries(n, prefix="", part_2 = False):
     if n == 0:
@@ -27,21 +26,34 @@ def apply_combination(comb, numb):
 
 
 with open('input.txt', 'r') as file:
-    total = 0
+    total_part1 = 0
+    total_part2 = 0
+    
     for line in file:
         numbers = re.findall(r"([0-9]+)", line)
         test_value = int(numbers[0])
         remaining_numbers = [int(num) for num in numbers[1:]]
-        combinations = generate_binaries(len(remaining_numbers) - 1, part_2= True)
+        combinations_part1 = generate_binaries(len(remaining_numbers) - 1, part_2= False)
+        combinations_part2 = generate_binaries(len(remaining_numbers) - 1, part_2= True)
 
-        has_valid_comb = False
-        for combination in combinations:
+        has_valid_comb_part1 = False
+        for combination in combinations_part1:
             operation_candidate = apply_combination(combination, remaining_numbers)
             if operation_candidate == test_value:
-                has_valid_comb = True
+                has_valid_comb_part1 = True
+                break
         
-        total += has_valid_comb * test_value
+        total_part1 += has_valid_comb_part1 * test_value
 
-print(total)
+        has_valid_comb_part2 = False
+        for combination in combinations_part2:
+            operation_candidate = apply_combination(combination, remaining_numbers)
+            if operation_candidate == test_value:
+                has_valid_comb_part2 = True
+                break
+        
+        total_part2 += has_valid_comb_part2 * test_value
 
-
+print("Time elapsed:", datetime.now() - init_time)
+print("Total calibration result part 1:", total_part1)
+print("Total calibration result part 2:", total_part2)

@@ -1,12 +1,14 @@
 import re
+from datetime import datetime
+
+init_time = datetime.now()
 
 rules = []
 updates = []
 
 rules_dict = {}
-sum = 0
+sum_middle_page = 0
 
-# Lire le fichier ligne par ligne
 with open('input_rules.txt', 'r') as file:
     for line in file:
         higher = int(line[:2])
@@ -28,6 +30,12 @@ with open('input_updates.txt', 'r') as file:
                 for before_element in before:
                     if int(before_element) in rules:
                         not_candidate = True
-        sum += (1 - not_candidate) * int(update_candidate[len(update_candidate)//2])
+                        break
+                else:
+                    continue
+                break
 
-print(sum)
+        sum_middle_page += (1 - not_candidate) * int(update_candidate[len(update_candidate)//2])
+
+print("Time elapsed:", datetime.now() - init_time)
+print("Sum of middle pages:", sum_middle_page)

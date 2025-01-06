@@ -1,4 +1,7 @@
 import numpy as np
+from datetime import datetime
+
+init_time = datetime.now()
 
 data = np.loadtxt("input.txt", dtype=str)
 
@@ -33,7 +36,9 @@ def check_direction(mat, dir, id_row, id_col):
 
     return contains_xmas
 
-sum = 0
+sum_xmas = 0
+sum_crossed_mas = 0
+
 for i in range(len(data)):
     for j in range(len(data[0])):
 
@@ -61,6 +66,30 @@ for i in range(len(data)):
             #print(i, j, directions)
 
             for direction in directions:
-                sum += check_direction(data, direction, i, j)
+                sum_xmas += check_direction(data, direction, i, j)
+            
+            contains_crossed_mas = False
+        
+        elif i < len(data) - 2 and j < len(data[0]) - 2 and data[i][j] == "M":
+            contains_as = check_direction(data, 1, i-1, j-1)
+            other_cross_mas = check_direction(data, 3, i-1, j+3)
+            other_cross_sam = check_direction(data, 7, i+3, j-1)
 
-print(sum)
+            contains_crossed_mas = contains_as * (other_cross_mas + other_cross_sam)
+        
+        elif i < len(data) - 2 and j < len(data[0]) - 2 and data[i][j] == "S":
+            contains_am = check_direction(data, 5, i+3, j+3)
+            other_cross_mas = check_direction(data, 3, i-1, j+3)
+            other_cross_sam = check_direction(data, 7, i+3, j-1)
+
+            contains_crossed_mas = contains_am * (other_cross_mas + other_cross_sam)
+        
+        else: 
+            contains_crossed_mas = False
+        
+        sum_crossed_mas += contains_crossed_mas
+        
+
+print("Time elapsed:", datetime.now() - init_time)
+print("Number of XMAS occurences:", sum_xmas)
+print("Number of X-MAS occurences:", sum_crossed_mas)

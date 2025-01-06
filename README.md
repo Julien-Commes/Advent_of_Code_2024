@@ -1,5 +1,5 @@
 # Advent_of_Code_2024
-This repository the code I wrote to overcome AoC 2024 problems
+This repository contains the code I wrote to overcome AoC 2024 problems
 
 I'll try to detail later in the readme what was the approach day per day and the different traps I avoided/fell into.
 
@@ -10,6 +10,59 @@ Nothing to declare
 ## Day 3
 
 Used RegEx to find the correct multiplications in the input.
+
+## Day 4
+
+The puzzle involved identifying patterns of "XMAS" in a 2D string grid. For part 1, the algorithm iterates through each element of the grid. If an element is "X", it checks all possible directions (horizontally forward/backward, vertically, diagonally) to determine if the "X" is the start of "XMAS". This results in a time complexity of O(n²).
+
+For part 2, the approach is similar, with the exception that only two directions are checked: the diagonal (to the right and down) and the opposite diagonal (forming an "X" with the first diagonal). The time complexity remains O(n²). Initially, a separate code was written for this part (available in `day04/script_part2.py`), but it was later realized that the `check_direction()` function from part 1 could be reused for part 2. This optimized solution has been added to `day04/script.py`.
+
+## Day 5
+
+The problem of the day involved identifying lines that adhere to a specific order within a list of lines composed of sequences of two-digit numbers. For the first part, I iterated through each element (i.e., two-digit number) in a line and verified that every preceding number in the line was not recorded in the rules as needing to come after the current element.
+
+In the second part, the task was to reorder the incorrect lines. To achieve this, I placed each number in the reordered list based on the number of elements that should follow it. The practical approach was to first create a new line filled with zero elements. Then, for each element in the original line, I counted the number of elements that should come after it and placed the element in the k-th empty position in the new line (counting from the end), where k is the number of elements that should follow it.
+
+After review of this solution, I think it could be possible to optimize it by not creating the new line but finding the element that should in the middle using the same method that helped creating a new line.
+
+## Day 6
+
+The problem of the day involved identifying all positions occupied by a moving point in a 2D puzzle and determining what changes would create a loop in the moving point's path.
+
+### Part 1
+
+This part was straightforward. We could emulate the path by iterating over the guard's position (i.e., the moving point) and return the length of the path.
+
+### Part 2
+
+In this part, the objective was to find all obstacle locations that would create a loop in the guard's path. Initially, I tested every location in the 2D puzzle and reran the part 1 solution to see if it created a loop. However, this resulted in a large number of candidates to test (~20,000). Two optimizations helped speed up the process:
+
+1. Candidates will only be on the original path (otherwise, the guard won't have the opportunity to cross the location).
+2. The path from the initial position to the added obstacle will be the same as the original path. Therefore, we do not need to emulate this part of the path.
+
+These two optimizations reduced the script's runtime to approximately 1.5 minutes (both part solutions can be executed using `day06/script_part2.py`) on my laptop, while a single iteration takes 0.1 seconds (can be executed separately using `day06/script.py`).
+
+## Day 7
+
+The problem of the day involved determining if a target number could be obtained using a set of numbers and operations. To solve this, I generated all possible combinations using recursion and tested if any combination matched the target number.
+
+The only issue I encountered was initially thinking that I needed to apply operations in a specific order (multiplications before additions). The implementation I made in this regard is still available in `day07/script_with_order.py`.
+
+## Day 8
+
+Not a lot to describe for today's problem. we first evaluate the horizontal and vertical distance between to antenas and then check the location obtained when we apply again the distance. For the part 2, we just have to apply k time the distance until we reach the border of the puzzle.
+
+## Day 9
+
+Today's problem involved allocating files in empty spaces from a line giving file locations. The main idea was to traverse the line of locations both in the forward and reverse directions. In the forward direction, we traverse the line until we find an empty space. Then, in the reverse direction, we move files into the found empty spaces.
+
+A crucial aspect of making this solution memory efficient is understanding that we only need a checksum of the reorganized locations, not a line giving the new locations. Therefore, we compute the checksum at each step and only store an integer rather than a list.
+
+For part 2, we apply the same idea but add a condition on the empty space and file size. For better clarity, I have separated both parts (part 2 can be executed using `day09/script_part2.py`).
+
+## Day 10
+
+Today's problem was a pathfinding problem. I have just implemented a custom depth-first algorithm and iterated over all elements of the 2D puzzle that were equal to 0.
 
 ## Day 16
 

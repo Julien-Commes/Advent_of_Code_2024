@@ -1,4 +1,7 @@
 import numpy as np
+from datetime import datetime
+
+init_time = datetime.now()
 
 data = np.loadtxt("input.txt", dtype=str)
 
@@ -28,5 +31,6 @@ for i in range(len(data) - 2):
             contains_xmas = False
 
         sum += contains_xmas
-        
-print(sum)
+
+print("Time elapsed:", datetime.now() - init_time)
+print("Number of X-MAS occurences:", sum)

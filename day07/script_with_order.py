@@ -1,4 +1,11 @@
+'''
+This code is an attempt I made before realizing we do not apply operations order rules
+'''
+
 import re
+from datetime import datetime
+
+init_time = datetime.now()
 
 def generate_binaries(n, prefix=""):
     if n == 0:
@@ -39,7 +46,7 @@ def apply_combination(comb, numb):
     return apply_combination(comb[:first_0_id], numb[:first_0_id+1]) + apply_combination(comb[first_0_id+1:], numb[first_0_id+1:])
 
 
-with open('example.txt', 'r') as file:
+with open('input.txt', 'r') as file:
     total = 0
     for line in file:
         numbers = re.findall(r"([0-9]+)", line)
@@ -50,14 +57,12 @@ with open('example.txt', 'r') as file:
         has_valid_comb = False
         for combination in combinations:
             operation_candidate = apply_combination(combination, remaining_numbers)
-            if test_value == 292:
-                print(operation_candidate, combination, remaining_numbers)
             if operation_candidate == test_value:
                 has_valid_comb = True
-                #print(test_value)
         
         total += has_valid_comb * test_value
 
+print("Time elapsed:", datetime.now() - init_time)
 print(total)
 
 

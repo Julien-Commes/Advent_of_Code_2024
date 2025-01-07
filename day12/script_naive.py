@@ -1,6 +1,10 @@
 import re
 import numpy as np
 import string
+from datetime import datetime
+
+init_time = datetime.now()
+
 
 def segmenter_chaine(chaine):
     segments = re.findall(r'(([a-zA-Z])\2*)(\d*)', chaine)
@@ -79,65 +83,37 @@ def update_line_with_shape(curr_line, next_line):
     return next_line_updated
 
 
-def count_area_perim(curr_line, next_line, prev_line, counting_dict):
+def count_area_perim(curr_line, next_line, counting_dict):
     #print(curr_line)
-    for index in range(len(curr_line) + 1):
+    for index, element in enumerate(curr_line):
+        next_line_neighbour = next_line[index]
+        added_perim = 0
+
+        if element == element.upper():
+            added_perim += 1
+
+        if index == len(curr_line) - 1:
+            added_perim += 1
+        elif curr_line[index + 1].lower() != element.lower():
+            added_perim += 1
+    
         if index == 0:
-            prev_line_first = 'X'
-            curr_line_first = 'X'
-            next_line_first = 'X'
-        else:
-            prev_line_first = prev_line[index - 1]
-            curr_line_first = curr_line[index - 1]
-            next_line_first = next_line[index - 1]
-        if index == len(curr_line):
-            prev_line_sec = 'X'
-            curr_line_sec = 'X'
-            next_line_sec = 'X'
-        else:
-            prev_line_sec = prev_line[index]
-            curr_line_sec = curr_line[index]
-            next_line_sec = next_line[index]
-
-        first_perim = 0
-        second_perim = 0
+            added_perim += 1
+        elif curr_line[index - 1].lower() != element.lower():
+            added_perim += 1
         
-        if curr_line_first != "X":
-            if curr_line_first.lower() == curr_line_first:
-                if curr_line_first.upper() == curr_line_sec:
-                    first_perim += 1
-                elif curr_line_first != curr_line_sec.lower() and curr_line_first == prev_line_sec.lower():
-                    first_perim += 1
-            elif curr_line_first.lower() == curr_line_sec:
-                first_perim += 1
-            elif curr_line_first != curr_line_sec.upper():
-                first_perim += 1
-            if curr_line_first.upper() != curr_line_sec.upper() and curr_line_first.upper() != next_line_first.upper():
-                first_perim += 1
+        if element.upper() != next_line_neighbour.upper():
+            added_perim += 1
 
-            if curr_line_first.upper() in counting_dict:
-                counting_dict[curr_line_first.upper()][0] += first_perim
-                counting_dict[curr_line_first.upper()][1] += 1
-            else:
-                counting_dict[curr_line_first.upper()] = [first_perim, 1]
-        
-        if curr_line_sec != "X":
-            if curr_line_sec.upper() == curr_line_sec:
-                if curr_line_first.upper() != curr_line_sec:
-                    second_perim += 1
-            elif curr_line_first.lower() != curr_line_sec and prev_line_first.lower() == curr_line_sec:
-                second_perim += 1
-            if curr_line_sec.upper() != curr_line_first.upper() and curr_line_sec.upper() != next_line_sec.upper():
-                second_perim += 1
-
-            if curr_line_sec.upper() in counting_dict:
-                counting_dict[curr_line_sec.upper()][0] += second_perim
-            else:
-                counting_dict[curr_line_sec.upper()] = [second_perim, 0]
+        if element.upper() in counting_dict:
+            counting_dict[element.upper()][0] += added_perim
+            counting_dict[element.upper()][1] += 1
+        else:
+            counting_dict[element.upper()] = [added_perim, 1]
 
     return counting_dict
 
-garden_map = np.loadtxt('example.txt', dtype=str)
+garden_map = np.loadtxt('input.txt', dtype=str)
 max_bound_x = len(garden_map[0])
 max_bound_y = garden_map.shape[0]
 
@@ -146,7 +122,6 @@ category_id_dict = {letter: [0] for letter in string.ascii_uppercase}
 same_regions_dict = {}
 
 garden_map_with_regions = []
-garden_map_with_regions.append(['X' for k in range(max_bound_x)])
 
 curr_line = segmenter_chaine(garden_map[0])
 
@@ -157,7 +132,7 @@ for y in range(1, max_bound_y):
     next_line = garden_map[y]
     curr_line = segmenter_chaine(update_line_with_shape(first_line, next_line))
     if y == max_bound_y - 1:
-        garden_map_with_regions.append(['X' for k in range(max_bound_x)])
+        garden_map_with_regions.append(['1' for k in range(max_bound_x)])
 
 regions_dict = {}
 keys_to_del = []
@@ -173,14 +148,14 @@ for key in keys_to_del:
 garden_map_with_regions = transform_overlaping_regions(garden_map_with_regions, same_regions_dict)
 
 for y in range(0, max_bound_y - 1):
-    prev_line = garden_map_with_regions[y]
-    curr_line = garden_map_with_regions[y+1]
-    next_line = garden_map_with_regions[y+2]
+    curr_line = garden_map_with_regions[y]
+    next_line = garden_map_with_regions[y+1]
 
-    regions_dict = count_area_perim(curr_line, next_line, prev_line, regions_dict)
+    regions_dict = count_area_perim(curr_line, next_line, regions_dict)
 
 sum = 0
 for key in regions_dict:
     sum += regions_dict[key][0] * regions_dict[key][1]
 
+print("Time elapsed:", datetime.now() - init_time)
 print(sum) #, regions_dict)

@@ -1,6 +1,8 @@
 # Python program for A* Search Algorithm
-import math
 import heapq
+from datetime import datetime
+
+init_time = datetime.now()
 
 # Define the size of the grid
 ROW = 141
@@ -38,7 +40,6 @@ def trace_path(cell_details, dest, grid):
     row = dest[0]
     col = dest[1]
     orient = 0
-    #print(row, col, orient)
     paths_to_add = [(row, col, orient)]
 
     while len(paths_to_add) > 0:
@@ -72,19 +73,10 @@ def trace_path(cell_details, dest, grid):
 
         # Add the source cell to the path
         path.append((row, col))
-        #print(path)
     
     set_tiles_on_paths = set(path) 
     tiles_on_paths = (list(set_tiles_on_paths))
-    print("Number of tiles on shortest paths: ", len(tiles_on_paths)) #, tiles_on_paths)
-    
-    '''
-    for tiles in tiles_on_paths:
-        grid[tiles[0]][tiles[1]] = 'O'
-    for line in grid:
-        print(line)
-    '''
-    
+    print("Number of tiles on shortest paths:", len(tiles_on_paths))
 
 # Implement the A* search algorithm
 def a_star_search(grid, src, dest):
@@ -161,17 +153,9 @@ def a_star_search(grid, src, dest):
                     cell_details[new_i][new_j][0].parent_j.append(j)
                     cell_details[new_i][new_j][0].parent_orientation.append(orientation)
 
-                    #print(open_list)
-                    print("The destination cell is found")
+                    #print("The destination cell is found")
                     # Trace and print the path from source to destination
                     trace_path(cell_details, dest, grid)
-
-                    #for index_i, line in enumerate(cell_details):
-                        #for index_j, point in enumerate(line):
-                            #for index_rot, element in enumerate(point):
-                                #if len(element.parent_i) > 0:
-                                    #print("location:", index_i, index_j, index_rot)
-                                    #print(element.parent_i, element.parent_j, element.parent_orientation)
                     return 
                 else:
                     # Calculate the new f, g, and h values
@@ -180,7 +164,6 @@ def a_star_search(grid, src, dest):
                         added_cost = 1000.0
                     new_cost = cell_details[i][j][orientation].cost + added_cost
                     
-                    #print(f_new, new_i, new_j, new_orient)
                     # If the cell is not in the open list or the new f value is smaller
                     if (cell_details[new_i][new_j][new_orient].cost == float('inf') or cell_details[new_i][new_j][new_orient].cost == new_cost) and new_cost <= max_cost:
                         # Add the cell to the open list
@@ -204,9 +187,6 @@ def a_star_search(grid, src, dest):
     if not found_dest:
         print("Failed to find the destination cell")
 
-# Driver Code
-
-
 def main():
     grid=[['' for _ in range(COL)] for _ in range(ROW)]
 
@@ -222,6 +202,7 @@ def main():
 
     # Run the A* search algorithm
     a_star_search(grid, src, dest)
+    print("Time elapsed:", datetime.now() - init_time)
 
 if __name__ == "__main__":
     main()

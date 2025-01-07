@@ -1,156 +1,110 @@
-import re
 import numpy as np
-import string
+from datetime import datetime
 
-def segmenter_chaine(chaine):
-    segments = re.findall(r'(([a-zA-Z])\2*)(\d*)', chaine)
-    resultat = []
-    before = '0'
-    for segment, segment_type, chiffres in segments:
-        is_same_as_before = (before.lower() == segment_type.lower())
-        if is_same_as_before:
-            if chiffres:
-                resultat[-1] += segment + chiffres
-            else:
-                resultat[-1] += segment    
-        elif chiffres:
-            resultat.append(segment + chiffres)
-        else:
-            resultat.append(segment)
-        before = segment_type
-    
-    return resultat
+init_time = datetime.now()
 
-def get_regions_of_line(line, letters_id_dict, duplicate_regions_dict):
-    new_line = []
-    for region in line:
-        is_lower = len(re.findall(r'[a-z]+', region)) > 0
-        category = re.findall(r'[a-zA-Z]+', region)[0][0]
-        if is_lower:
-            category_ids = list(np.unique(re.findall(r'([0-9]+)', region)))
-            category_id, position = str(np.min([int(t) for t in category_ids])), np.argmin([int(t) for t in category_ids])
-            
-            if len(category_ids) > 1:
-                regions = [category.lower() + id for id in category_ids]
+image = np.loadtxt('input.txt', dtype=str)
+
+class UnionFind:
+    def __init__(self):
+        self.parent = {}
+
+    def find(self, x):
+        if self.parent[x] != x:
+            self.parent[x] = self.find(self.parent[x]) 
+        return self.parent[x]
+
+    def union(self, x, y):
+        root_x = self.find(x)
+        root_y = self.find(y)
+        if root_x != root_y:
+            self.parent[root_y] = root_x 
+
+    def add(self, x):
+        if x not in self.parent:
+            self.parent[x] = x
+
+
+def connected_components_labeling(image):
+    rows, cols = len(image), len(image[0])
+    labels = [[0 for _ in range(cols)] for _ in range(rows)]
+    uf = UnionFind()
+    current_label = 1
+
+    for i in range(rows):
+        for j in range(cols):
+            neighbors = []
+
+            if i > 0 and image[i][j] == image[i-1][j]:
+                neighbors.append(labels[i-1][j])
                 
-                if regions[position] in duplicate_regions_dict:
-                    regions.pop(position)
-                    duplicate_regions_dict[category.lower() + category_id] += regions
-                else:
-                    regions.pop(position)
-                    duplicate_regions_dict[category.lower() + category_id] = regions
+            if j > 0 and image[i][j] == image[i][j-1]:
+                neighbors.append(labels[i][j-1])
 
-            new_sequence = add_sequence_id(region, category_id)
-            new_line += new_sequence
+            if not neighbors:
+                labels[i][j] = current_label
+                uf.add(current_label)
+                current_label += 1
+            else:
+                min_label = min(neighbors)
+                labels[i][j] = min_label
+
+                for neighbor in neighbors:
+                    uf.union(min_label, neighbor)
+
+    for i in range(rows):
+        for j in range(cols):
+            labels[i][j] = uf.find(labels[i][j])
+    return labels
+
+labels = connected_components_labeling(image) #Find distinct regions in the input 
+
+def is_not_label(element, label):
+    return element != label
+
+def count_edges_vertices(map, i, j, label): #Count added perimeter and perimeter w/ discount per pixel in region (i.e., number of edges and vertices)
+    nb_vertices = 0
+    nb_edges = 0
+    border_left, border_right, border_up, border_down = i > 0, i < len(map)-1, j > 0, j < len(map[0])-1
+
+    corner_1 = is_not_label(map[i-1][j-1], label) if border_left and border_up else 1
+    neighbours_1 = (is_not_label(map[i-1][j], label) if border_left else 1) + (is_not_label(map[i][j-1], label) if border_up else 1)
+
+    corner_2 = is_not_label(map[i-1][j+1], label) if border_left and border_down else 1
+    neighbours_2 = (is_not_label(map[i-1][j], label) if border_left else 1) + (is_not_label(map[i][j+1], label) if border_down else 1) 
+
+    corner_3 = is_not_label(map[i+1][j-1], label) if border_right and border_up else 1
+    neighbours_3 = (is_not_label(map[i+1][j], label) if border_right else 1) + (is_not_label(map[i][j-1], label) if border_up else 1)
+
+    corner_4 = is_not_label(map[i+1][j+1], label) if border_right and border_down else 1
+    neighbours_4 = (is_not_label(map[i+1][j], label) if border_right else 1) + (is_not_label(map[i][j+1], label) if border_down else 1)
+
+    corners, neighbours = [corner_1, corner_2, corner_3, corner_4], [neighbours_1, neighbours_2, neighbours_3, neighbours_4]
+
+    for corner, neighbour in zip(corners, neighbours):
+        nb_vertices += 2 * ((neighbour + corner) == 3) + (neighbour == 1) * (corner == 0) +  2 * (neighbour == 2) * (corner == 0) # 2 times the number of vertices added by the pixel as it shares vertices with other pixels
+    nb_edges = neighbours_1 + neighbours_4
+
+    return nb_edges, nb_vertices
+
+regions = {}
+
+for i in range(len(labels)):
+    for j in range(len(labels[0])):
+        label = labels[i][j]
+        nb_edges, nb_vertices = count_edges_vertices(labels, i, j, label) 
+
+        if label in regions:
+            regions[label][0] += 1
+            regions[label][1] += nb_edges
+            regions[label][2] += nb_vertices
+
         else:
-            category_id = max(letters_id_dict[category])+1
-            letters_id_dict[category].append(category_id)
-            new_sequence = add_sequence_id(region, str(category_id))
-            new_line += new_sequence
-    return new_line, letters_id_dict
+            regions[label] = [1, nb_edges, nb_vertices]
 
-def add_sequence_id(sequence, category_id):
-    letters = re.findall(r'[a-zA-Z]', sequence)
-    result = [letter + category_id for letter in letters]
-    return result
+sum_part1 = sum(value[0] * value[1] for value in regions.values())
+sum_part2 = sum(value[0] * (value[2]//2) for value in regions.values()) # Divided by 2 because we counted 2 time each vertices (as some vertices are shared between 2 pixels)
 
-def transform_overlaping_regions(overlaping_map, duplicate_regions_dict):
-    new_map = []
-    for nb, line in enumerate(overlaping_map):
-        for index, element in enumerate(line):
-            if element.lower() not in duplicate_regions_dict:
-                for key in duplicate_regions_dict:
-                    if key[:1] == element[:1].lower():
-                        if element.lower() in duplicate_regions_dict[key]:
-                            line[index] = element[:1] + key[1:]
-        new_map.append(line)
-    return new_map
-    
-def update_line_with_shape(curr_line, next_line):
-    next_line_updated=''
-
-    for index, element in enumerate(curr_line):
-        next_line_neighbour = next_line[index]
-        if element[:1].upper() == next_line_neighbour:
-            next_line_neighbour = element.lower()
-        
-        next_line_updated += next_line_neighbour
-
-    return next_line_updated
-
-
-def count_area_perim(curr_line, next_line, counting_dict):
-    print(curr_line)
-    for index, element in enumerate(curr_line):
-        next_line_neighbour = next_line[index]
-        added_perim = 0
-
-        if element == element.upper():
-            added_perim += 1
-
-        if index == len(curr_line) - 1:
-            added_perim += 1
-        elif curr_line[index + 1].lower() != element.lower():
-            added_perim += 1
-    
-        if index == 0:
-            added_perim += 1
-        elif curr_line[index - 1].lower() != element.lower():
-            added_perim += 1
-        
-        if element.upper() != next_line_neighbour.upper():
-            added_perim += 1
-
-        if element.upper() in counting_dict:
-            counting_dict[element.upper()][0] += added_perim
-            counting_dict[element.upper()][1] += 1
-        else:
-            counting_dict[element.upper()] = [added_perim, 1]
-
-    return counting_dict
-
-garden_map = np.loadtxt('input.txt', dtype=str)
-max_bound_x = len(garden_map[0])
-max_bound_y = garden_map.shape[0]
-
-regions_dict = {}
-category_id_dict = {letter: [0] for letter in string.ascii_uppercase}
-same_regions_dict = {}
-
-garden_map_with_regions = []
-
-curr_line = segmenter_chaine(garden_map[0])
-
-for y in range(1, max_bound_y):
-    first_line, category_id_dict = get_regions_of_line(curr_line, category_id_dict, same_regions_dict)
-    garden_map_with_regions.append(first_line)
-
-    next_line = garden_map[y]
-    curr_line = segmenter_chaine(update_line_with_shape(first_line, next_line))
-    if y == max_bound_y - 1:
-        garden_map_with_regions.append(['1' for k in range(max_bound_x)])
-
-regions_dict = {}
-keys_to_del = []
-for key in same_regions_dict:
-    for key_alt in same_regions_dict:
-        if key in same_regions_dict[key_alt]:
-            same_regions_dict[key_alt] += same_regions_dict[key]
-            keys_to_del.append(key)
-
-for key in keys_to_del:
-    same_regions_dict.pop(key)
-
-garden_map_with_regions = transform_overlaping_regions(garden_map_with_regions, same_regions_dict)
-
-for y in range(0, max_bound_y - 1):
-    curr_line = garden_map_with_regions[y]
-    next_line = garden_map_with_regions[y+1]
-
-    regions_dict = count_area_perim(curr_line, next_line, regions_dict)
-
-sum = 0
-for key in regions_dict:
-    sum += regions_dict[key][0] * regions_dict[key][1]
-
-print(sum) #, regions_dict)
+print("Time elapsed:", datetime.now() - init_time)
+print("Total price of fences:", sum_part1)
+print("Total price of fences with discount:", sum_part2)

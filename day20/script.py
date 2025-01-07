@@ -1,7 +1,5 @@
 # Python program for A* Search Algorithm
-import math
 import heapq
-import numpy as np
 from datetime import datetime
 
 init_time = datetime.now()
@@ -183,19 +181,24 @@ def main():
     init_cost, init_path = a_star_search(grid, src, dest)
 
     min_time_gained = 100
-    max_len_cheat = 20
+    max_len_cheat_part1 = 2
+    max_len_cheat_part2 = 20
 
+    two_pico_cheats = []
     twenty_or_less_pico_cheats = []
     for index_start, start in enumerate(init_path):
         #print(index_start, 'out of', len(init_path)) #Uncomment this line to check the progress
         for index_end, end in enumerate(init_path[index_start+min_time_gained:]):
             if start != end:
                 distance = abs(start[0] - end[0]) + abs(start[1] - end[1])
-                if distance <= max_len_cheat and index_end - distance >= 0: 
+                if distance <= max_len_cheat_part1 and index_end - distance >= 0: 
+                    two_pico_cheats.append((start, end))
+                if distance <= max_len_cheat_part2 and index_end - distance >= 0: 
                     twenty_or_less_pico_cheats.append((start, end))
 
-    print(datetime.now() - init_time)
-    print("Total number of cheats of maximum length:", max_len_cheat, "saving at least 100 picoseconds:", len(twenty_or_less_pico_cheats))
+    print("Time elapsed:", datetime.now() - init_time)
+    print("Total number of cheats of maximum length:", max_len_cheat_part1, "saving at least 100 picoseconds:", len(two_pico_cheats))
+    print("Total number of cheats of maximum length:", max_len_cheat_part2, "saving at least 100 picoseconds:", len(twenty_or_less_pico_cheats))
 
 
 if __name__ == "__main__":

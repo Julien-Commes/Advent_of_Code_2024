@@ -1,3 +1,7 @@
+from datetime import datetime 
+
+init_time = datetime.now()
+
 def bitwise_XOR(A, B):
     binary_A = bin(A)[2:]
     binary_B = bin(B)[2:]
@@ -73,7 +77,7 @@ class Register:
         denominator = 2 ** self.get_combo_operand(operand)
         self.C = numerator//denominator
 
-test_register = Register(136904921295258, 0, 0)
+test_register = Register(51064159, 0, 0)
 test_program = [2,4,1,5,7,5,1,6,0,3,4,6,5,5,3,0]
 instruction_pointer = 0
 max_pointer = len(test_program)
@@ -110,4 +114,5 @@ while instruction_pointer < max_pointer:
             test_register.cdv(operand)
             instruction_pointer += 2
 
-print(outputs)
+print("Time elapsed:", datetime.now() - init_time)
+print("Output values:", outputs)

@@ -57,6 +57,6 @@ for pattern in patterns:
     
     total_valid_lines += can_be_constructed 
     
-print(datetime.now() - init_time)
+print("Time elapsed:", datetime.now() - init_time)
 print("Total number of valid lines:", total_valid_lines)
 print("Total number of valid combination:", total_valid_comb)

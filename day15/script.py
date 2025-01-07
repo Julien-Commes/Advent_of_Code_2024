@@ -1,25 +1,7 @@
 import numpy as np
+from datetime import datetime
 
-'''
-########
-#..O.O.#
-##@.O..#
-#...O..#
-#.#.O..#
-#...O..#
-#......#
-########
-
-max_i, max_j = 7, 7
-
-moves = '<^^>>>vv<v>>v<<'
-
-boxes = [(1, 3), (1, 5), (2, 4), (3, 4), (4, 4), (5, 4)]
-
-walls = [(2, 1), (4, 2)]
-
-pos = (2, 2)
-'''
+init_time = datetime.now()
 
 boxes = []
 walls = []
@@ -57,7 +39,6 @@ def move_dir(str_direction):
             return 0
         
 def determine_move(positions, indexes, walls: list, boxes: list, direction: tuple):
-    #print(positions, direction, boxes)
     position_candidate = positions[-1][0] + direction[0], positions[-1][1]  + direction[1]
     out_of_bound = position_candidate[0] == 0 or position_candidate[0] == max_i or position_candidate[1] == 0 or position_candidate[1] == max_j
 
@@ -72,7 +53,6 @@ def determine_move(positions, indexes, walls: list, boxes: list, direction: tupl
         return(positions + direction, indexes)
 
 for move in moves:
-    #print(boxes, pos, move)
     direction = move_dir(move)
     new_posistions, indexes = determine_move(np.array([pos], dtype=object), [], walls, boxes, direction)
     pos, new_boxes = new_posistions[0], new_posistions[1:]
@@ -80,10 +60,9 @@ for move in moves:
         for loc, index in enumerate(indexes):
             boxes[index] = (new_boxes[loc][0], new_boxes[loc][1])
 
-#print(boxes, pos)
-
 total = 0
 for box in boxes:
     total += 100 * box[0] + box[1]
 
-print(total)
+print("Time elapsed:", datetime.now() - init_time)
+print("Sum of all boxes' final GPS coordinates:", total)

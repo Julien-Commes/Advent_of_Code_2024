@@ -62,19 +62,61 @@ For part 2, we apply the same idea but add a condition on the empty space and fi
 
 ## Day 10
 
-Today's problem was a pathfinding problem. I have just implemented a custom depth-first algorithm and iterated over all elements of the 2D puzzle that were equal to 0.
+Today's problem was a pathfinding problem. I implemented a custom depth-first algorithm and iterated over all elements of the 2D puzzle that were equal to 0.
+
+## Day 11
+
+Today's problem involved applying rules to a list of integers a certain number of times (25 for part 1, 75 for part 2). The issue here is that those integers could eventually create new integers in the list, increasing the list length and therefore the number of operations to apply per epoch.
+
+This is very similar to the 2021 day 6 problem with lanternfish, where the trick is to count the number of elements of a certain level (i.e., the number of occurences of an integer in the list) rather than storing all of them, as the result of the operation will be the same for all of them. This makes the code memory and time efficient. However, as the rules do not change at each iteration, we could make the solution even more efficient by finding a formula that would directly give the number of integers produced by an integer after k iterations rather than performing each iteration. Another solution would be to use memoization, as many integers are recurrent (e.g., 0 and 1).
+
+## Day 12
+
+This day was significant for me as it was the first time I encountered a problem directly related to image processing, specifically shape attributes, which I studied during my second Master's degree. The task involved finding areas and perimeters of regions in a 2D grid of letters.
+
+I treated each letter as a grey level in an image and applied a connected component labeling method (two-pass algorithm) to distinguish each region. Then, I counted all "minimal edges" and vertices that each pixel adds to the shape of a region, corresponding to how the perimeter is considered in part 1 and part 2, respectively.
+
+The final code can be executed by running `day12/script.py`. Additionally, I have included the initial "naive" code (`day12/script_naive.py` for part 1 and `day12/script_naive_part2.py` for part 2), which was an attempt to create a more efficient variant of the two-pass algorithm for this specific problem. Interestingly, the final (more general) implementation runs twice as fast.
+
+## Day 13
+
+Today's problem involved determining the number of times we needed to press two buttons to move a point in a 2-dimensional space to a target location. This can be translated into a linear equation: a * (x1, y1) + b * (x2, y2) = (x3, y3), where A = (x1, y1) represents the translation caused by pressing button A, B = (x2, y2) represents the translation caused by pressing button B, and (x3, y3) is the target.
+
+This equation has a unique solution if the determinant of the matrix formed by A and B is non-zero. Therefore, the problem reduces to solving a linear equation. If the determinant is zero, there is either no solution or an infinite number of solutions. In the latter case, an optimization method would be required, but this scenario did not occur in the provided input.
+
+## Day 14
+
+### Part 1
+
+Today's part 1 challenge was relatively straightforward. We were given the locations of robots along with their movement patterns, which remain consistent across iterations. The task was to determine the locations of the robots after 100 iterations. Since each robot's movement pattern is independent of the others and remains unchanged, the location after k iterations can be calculated using a simple formula: x_initial + k * x_movement, y_initial + k * y_movement (with a minor exception when the robot moves out of the grid).
+
+### Part 2
+
+The second part was more subtle. We needed to determine the number of iterations required for the robots' locations to form a Christmas tree shape. Without a clear description of what a Christmas tree should look like, I initially decided to generate an image for each iteration. This approach presented two main problems:
+1. It did not utilize the observation from part 1, which saved time by considering each robot independently.
+2. It required a large number of iterations, making image generation time-consuming.
+
+After generating approximately 7000 images, I discovered on the AoC subreddit that the correct iteration could be found by checking if no robots were overlapping. I added this solution to the code in `day14/script.py`, but it is not the only working solution. For example, measuring the image variance also works well. I find this method of solving the puzzle quite clever!
+
+## Day 15
+
+Today's problem involved simulating moving objects due to a robot moving on a 2D puzzle with movement instructions and obstacles. For part 1 (`day15/script.py`), I emulated the robot's path and added a function to check all boxes moved by the robot's movement. This was done using a recursive function that checking boxes from the robot to either the next empty spot or the next obstacle in the direction of the robot's movement, then moving all boxes encountered in the recursion.
+
+Part 2 (`day15/script_part2.py`) involved a similar approach, but I had to distinguish between vertical and horizontal movements, as the modifications in part 2 only impacted vertical movements.
+
+To run the code, please separate the input into two text files: `input_map.txt` (containing your grid input) and `input_moves.txt` (containing your list of movements).
 
 ## Day 16
 
 ### Part 1
 
-I just took a A* algorithm implementation (https://www.geeksforgeeks.org/a-search-algorithm-in-python/) and changed the heuristic to put a penality depending on the number of rotation that will be needed to go to the final destination. I also added the rotation as a coordinate, so a position was defined (x, y, rotation).
+I just took a A* algorithm implementation found [here](https://www.geeksforgeeks.org/a-search-algorithm-in-python/) and changed the heuristic to put a penality depending on the number of rotation that will be needed to go to the final destination. I also added the rotation as a coordinate, so a position was defined (x, y, rotation).
 
-It worked pretty well and fast enough however I did not find a way to change it in a way to solve part 2 so far. 
+It worked pretty well and fast enough however it took me a lot of time to find a way to change it in a way to solve part 2. 
 
 ### Part 2
 
-I am editing this part as I found where my mistake was. The script on part 1 was organised to function in 2 steps:
+The script on part 1 was organised to function in 2 steps:
 1. Find the shortest path and register tiles per tiles the next tile on the path. 
 2. Start from the last tile (i.e. the targeted destination) and go back one tile at a time using the registered tiles on the path.
 
@@ -85,6 +127,8 @@ Of course I had to change some parameters for the first step: The cost to curren
 On the second step, we use the same protocol but when a node (tile) has more than one previous tile leading to it, we register all these tiles in a pending list and continue our path tracing until reaching the start point. After that we restart from the first tile in the pending list and so on. 
 
 ## Day 17
+
+Please note that for this puzzle, I have directly written my input in the code as it was very short and because my solution is specifically tailored to my input.
 
 ### Part 1
 
@@ -106,7 +150,7 @@ While A > 0:
     Output B % 8
 ``` 
 
-At first I had elaborated a method to go from the value of the output and find the possible values of A creating this output, but it turns out that just trying every possible A of the current iteration and comparing the produced result with the expected output value is "fast enough" (less than a second on my computer).
+At first I had elaborated a method to go from the value of the output and find the possible values of A creating this output, but it turns out that just trying every possible A of the current iteration and comparing the produced result with the expected output value is "fast enough" (around .005 second on my computer).
 
 The approach was as following:
 

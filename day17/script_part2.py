@@ -42,9 +42,8 @@ for k in range(len(test_program)):
 
         if candidate_B%8 == output:
             if k == len(test_program) - 1:
-                print(candidate_A)
-                end_time = datetime.now()
-                print(end_time - init_time) 
+                print("Working register A initial value:", candidate_A)
+
             if candidate_A * 8 not in possible_A_next_loop:
                 possible_A_next_loop.append(candidate_A * 8)
                 possible_A_next_loop.append(candidate_A * 8 + 1)
@@ -55,5 +54,6 @@ for k in range(len(test_program)):
                 possible_A_next_loop.append(candidate_A * 8 + 6)
                 possible_A_next_loop.append(candidate_A * 8 + 7)   
 
-    
     possible_A_curr_loop = copy(possible_A_next_loop)
+
+print("Time elapsed:", datetime.now() - init_time) 

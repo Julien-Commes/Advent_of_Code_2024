@@ -1,6 +1,8 @@
 # Python program for A* Search Algorithm
-import math
 import heapq
+from datetime import datetime
+
+init_time = datetime.now()
 
 # Define the size of the grid
 ROW = 140
@@ -15,7 +17,7 @@ class Cell:
         self.parent_j = 0
     # Parent cell's orientation
         self.parent_orientation = 0
- # Total cost of the cell (g + h)
+    # Total cost of the cell (g + h)
         self.f = float('inf')
     # Cost from start to this cell
         self.g = float('inf')
@@ -23,26 +25,18 @@ class Cell:
         self.h = 0
 
 # Check if a cell is valid (within the grid)
-
-
 def is_valid(row, col):
     return (row >= 0) and (row < ROW) and (col >= 0) and (col < COL)
 
 # Check if a cell is unblocked
-
-
 def is_unblocked(grid, row, col):
     return grid[row][col] == '.' or grid[row][col] == 'S' or grid[row][col] == 'E'
 
 # Check if a cell is the destination
-
-
 def is_destination(row, col, dest):
     return row == dest[0] and col == dest[1]
 
 # Calculate the heuristic value of a cell (Euclidean distance to destination)
-
-
 def calculate_h_value(row, col, dest, orient):
     match orient:
         case 0:
@@ -53,21 +47,17 @@ def calculate_h_value(row, col, dest, orient):
             h = abs(row - dest[0]) + abs(col - dest[1]) + 1000 * (row - dest[0] == 0) + 1000 * (col - dest[1] == 0) 
         case 3:
             h = abs(row - dest[0]) + abs(col - dest[1]) + 1000 * (col - dest[1] == 0)
-    #print(h, ((row - dest[0]) ** 2 + (col - dest[1]) ** 2) ** 0.5)
-    return h # --> To modify
+    return h
 
 # Trace the path from source to destination
-
-
 def trace_path(cell_details, dest):
     total = 0
 
-    print("The Path is ")
+    #print("The Path is ")
     path = []
     row = dest[0]
     col = dest[1]
     orient = 0
-    #print(row, col, orient)
 
     # Trace the path from destination to source using parent cells
     while not (cell_details[row][col][orient].parent_i == row and cell_details[row][col][orient].parent_j == col and cell_details[row][col][orient].parent_orientation == orient):
@@ -84,28 +74,25 @@ def trace_path(cell_details, dest):
         row = temp_row
         col = temp_col
         orient = temp_orient
-        #print(temp_row, temp_col, temp_orient)
 
+    '''
     # Add the source cell to the path
     path.append((row, col, orient))
     # Reverse the path to get the path from source to destination
     path.reverse()
-
     # Print the path
     for i in path:
         print("->", i, end=" ")
-    print(total)
+    '''
+    print("Lowest score a Reindeer could get:", total)
 
 # Implement the A* search algorithm
-
-
 def a_star_search(grid, src, dest):
     # Check if the source and destination are valid
     if not is_valid(src[0], src[1]) or not is_valid(dest[0], dest[1]):
         print("Source or destination is invalid")
         return
 
-    #print(grid[src[0]][src[1]], grid[dest[0]][dest[1]])
     # Check if the source and destination are unblocked
     if not is_unblocked(grid, src[0], src[1]) or not is_unblocked(grid, dest[0], dest[1]):
         print("Source or the destination is blocked")
@@ -149,7 +136,6 @@ def a_star_search(grid, src, dest):
         j = p[2]
         orientation = p[3]
         closed_list[i][j][orientation] = True
-        #print(i, j, orientation)
 
         match orientation:
             case 0:
@@ -175,7 +161,7 @@ def a_star_search(grid, src, dest):
                     cell_details[new_i][new_j][0].parent_j = j
                     cell_details[new_i][new_j][0].parent_orientation = orientation
 
-                    print("The destination cell is found")
+                    #print("The destination cell is found")
                     # Trace and print the path from source to destination
                     trace_path(cell_details, dest)
                     found_dest = True
@@ -189,7 +175,6 @@ def a_star_search(grid, src, dest):
                     h_new = calculate_h_value(new_i, new_j, dest, new_orient)
                     f_new = g_new + h_new
 
-                    #print(f_new, new_i, new_j, new_orient)
                     # If the cell is not in the open list or the new f value is smaller
                     if cell_details[new_i][new_j][new_orient].f == float('inf') or cell_details[new_i][new_j][new_orient].f > f_new:
                         # Add the cell to the open list
@@ -206,8 +191,6 @@ def a_star_search(grid, src, dest):
     if not found_dest:
         print("Failed to find the destination cell")
 
-# Driver Code
-
 
 def main():
     grid=[]
@@ -222,7 +205,7 @@ def main():
 
     # Run the A* search algorithm
     a_star_search(grid, src, dest)
-
+    print("Time elapsed:", datetime.now() - init_time)
 
 if __name__ == "__main__":
     main()

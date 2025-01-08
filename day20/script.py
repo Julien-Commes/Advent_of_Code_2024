@@ -200,6 +200,5 @@ def main():
     print("Total number of cheats of maximum length:", max_len_cheat_part1, "saving at least 100 picoseconds:", len(two_pico_cheats))
     print("Total number of cheats of maximum length:", max_len_cheat_part2, "saving at least 100 picoseconds:", len(twenty_or_less_pico_cheats))
 
-
 if __name__ == "__main__":
     main()

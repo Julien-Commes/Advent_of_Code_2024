@@ -43,9 +43,9 @@ pairs_mapping = {'left_A': ['A_right', 'right_right', 'right_up', 'up_A'],
                  'A_A': ['A_A'],
                  }
 
-original_sequence_0 = ['A_left', 'left_up', 'up_up', 'up_up', 'up_A', 'A_left', 'left_A', 'A_right', 'right_right', 'right_A', 'A_down', 'down_down', 'down_down', 'down_A'] #['A_up', 'up_up', 'up_up', 'up_left', 'left_A', 'A_left', 'left_A', 'A_right', 'right_right', 'right_A', 'A_down', 'down_down', 'down_down', 'down_A'] 
-original_sequence_1 = ['A_left', 'left_up', 'up_up', 'up_A', 'A_down', 'down_down', 'down_A', 'A_up', 'up_up', 'up_up', 'up_A', 'A_down', 'down_down', 'down_down', 'down_right', 'right_A'] #['A_up', 'up_up', 'up_left', 'left_A', 'A_down', 'down_down', 'down_A', 'A_up', 'up_up', 'up_up', 'up_A', 'A_down', 'down_down', 'down_down', 'down_right', 'right_A'] #['A_left', 'left_up', 'up_up', 'up_A', 'A_down', 'down_down', 'down_A', 'A_up', 'up_up', 'up_up', 'up_A', 'A_right', 'right_down', 'down_down', 'down_down', 'down_A']
-original_sequence_2 = ['A_up', 'up_up', 'up_left', 'left_left', 'left_A', 'A_right', 'right_right', 'right_A', 'A_down', 'down_A', 'A_down', 'down_A'] #['A_left', 'left_up', 'up_up', 'up_A', 'A_down', 'down_down', 'down_A', 'A_up', 'up_up', 'up_up', 'up_A', 'A_right', 'right_down', 'down_down', 'down_down', 'down_A']
+original_sequence_0 = ['A_left', 'left_up', 'up_up', 'up_up', 'up_A', 'A_left', 'left_A', 'A_right', 'right_right', 'right_A', 'A_down', 'down_down', 'down_down', 'down_A']
+original_sequence_1 = ['A_left', 'left_up', 'up_up', 'up_A', 'A_down', 'down_down', 'down_A', 'A_up', 'up_up', 'up_up', 'up_A', 'A_down', 'down_down', 'down_down', 'down_right', 'right_A']
+original_sequence_2 = ['A_up', 'up_up', 'up_left', 'left_left', 'left_A', 'A_right', 'right_right', 'right_A', 'A_down', 'down_A', 'A_down', 'down_A']
 original_sequence_3 = ['A_left', 'left_up', 'up_up', 'up_A', 'A_up', 'up_right', 'right_A', 'A_down', 'down_down', 'down_A', 'A_down', 'down_A']
 original_sequence_4 = ['A_up', 'up_left', 'left_left', 'left_A', 'A_up', 'up_up', 'up_right', 'right_A', 'A_right', 'right_A', 'A_down', 'down_down', 'down_down', 'down_A']
 

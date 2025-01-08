@@ -1,7 +1,7 @@
 # Advent_of_Code_2024
-This repository contains the code I wrote to overcome AoC 2024 problems
+This repository contains the code I wrote to solve the AoC 2024 puzzles.
 
-I'll try to detail later in the readme what was the approach day per day and the different traps I avoided/fell into.
+I will detail here my approach for each day, including the different challenges I encountered and how I overcame them.
 
 ## Day 1-2
 
@@ -203,6 +203,20 @@ To speed up the process, bad candidates can be discarded before applying the for
 
 With this optimization, the script runs in approximately 3.7 seconds on my laptop.
 
+## Day 21
+
+Today's problem involved finding the shortest sequence of movements on a directional keypad to encode a sequence that would type the correct code on a numerical keypad. This required navigating through multiple intermediate directional keypads.
+
+To solve the problem, I wrote a recursive function that counts the number of movements needed to produce one movement from the first directional keypad to the last one. This was done by mapping a movement to the sequence of movements it would produce on the next keypad. Unfortunately, I have not yet written a method to get the sequence from the numerical keypad to the first keypad, so I had to write the initial sequence directly in the code.
+
+Part 2 involved increasing the number of intermediate directional keypads, which significantly increased the execution time. To address this, I used memoization by storing the count of final movements for a given (keypad depth, movement) pair.
+
+## Day 22
+
+Today's problem involved generating sequences of integers and then finding a specific pattern in these sequences with an optimality condition. For part 1, I applied the rules for each iteration, which worked well. For part 2, after each iteration, I stored the current score of every pattern for each buyer (i.e., lines in the input) in a dictionary and extracted the maximum score at the end.
+
+This process takes around 7 seconds to run on my laptop, which is not ideal, but I am pleased that I was able to reduce the runtime from approximately 2 minutes to 7 seconds. This improvement was achieved by optimizing the way I store the pattern scores and by applying the integer generation rules more efficiently (e.g., using the built-in bitwise XOR method rather than the one I initially implemented for day 17).
+
 ## Day 23
 
 Today's puzzle can be translated into graph theory as finding [cliques](https://en.wikipedia.org/wiki/Clique_(graph_theory)) from a given [edge list](https://en.wikipedia.org/wiki/Edge_list) with specific conditions.
@@ -210,3 +224,17 @@ Today's puzzle can be translated into graph theory as finding [cliques](https://
 The naive approach is presented in `initial_script.py`. To summarize briefly, we use elements of the list of edges to create sets of three interconnected nodes by comparing the elements with incomplete and already created sets. The issue with this method is that the number of iterations needed to compare one element of the edge list with all created sets constantly increases. Therefore, I decided to look for existing algorithms in graph theory to solve this type of problem.
 
 The final approach I decided to follow involved creating an [adjacency matrix](https://en.wikipedia.org/wiki/Adjacency_matrix) from the edge list, then applying a built-in function from the Networkx library (as I have only a basic understanding of graph theory), and finally applying some conditions (only cliques with exactly 3 nodes and one starting with "t", and taking the clique of maximum length).
+
+## Day 24
+
+Today's puzzle involved applying a set of operations (also referred to as gates) and then correcting the set so that it outputs the addition of two binary numbers.
+
+For part 1, I applied all operations with a system of priority to operations where all elements already have a registered value.
+
+For part 2, I had to find all resulting wires (i.e., results of operations) that were not well placed, causing the set of operations to not have the desired behavior. Since the puzzle stated that the set of operations should result in adding two binary numbers, I first determined what the set of operations should look like for each digit to produce the expected output. Then, I implemented a protocol to check if this is what the actual set is doing (for each digit) and registered any misplaced resulting wires. I simplified some of the conditions, assuming they would only cover edge cases that were unlikely to be in the puzzle input.
+
+The code is quite long as it needs to check a number of conditions, but it runs 'fast enough' (less than .01 seconds on my laptop).
+
+## Day 25
+
+The last puzzle involved checking if pairs of patterns fit without overlapping. The main difficulty was that the format of the input was not optimal. Therefore, I first recorded each key/lock pin height,as it was suggested in the puzzle. Then, I applied a simple condition that the sum of two corresponding pin heights should not be greater than 5.

@@ -1,7 +1,9 @@
 # Python program for A* Search Algorithm
-import math
 import heapq
 import numpy as np
+from datetime import datetime
+
+init_time = datetime.now()
 
 # Define the size of the grid
 ROW = 71
@@ -10,11 +12,11 @@ COL = 71
 # Define the Cell class
 class Cell:
     def __init__(self):
-      # Parent cell's row index
+    # Parent cell's row index
         self.parent_i = 0
     # Parent cell's column index
         self.parent_j = 0
- # Total cost of the cell (g + h)
+    # Total cost of the cell (g + h)
         self.f = float('inf')
     # Cost from start to this cell
         self.g = float('inf')
@@ -38,14 +40,10 @@ def calculate_h_value(row, col, dest):
     return (((row - dest[0]) ** 2 + (col - dest[1]) ** 2) ** 0.5)
 
 # Trace the path from source to destination
-def trace_path(cell_details, dest):
-    total = 0
-
-    print("The Path is ")
+def trace_path(cell_details, dest, is_part_1 = False):
     path = []
     row = dest[0]
     col = dest[1]
-    #print(row, col, orient)
 
     # Trace the path from destination to source using parent cells
     while not (cell_details[row][col].parent_i == row and cell_details[row][col].parent_j == col):
@@ -54,28 +52,21 @@ def trace_path(cell_details, dest):
         temp_col = cell_details[row][col].parent_j
         row = temp_row
         col = temp_col
-        #print(temp_row, temp_col)
 
     # Add the source cell to the path
     path.append((row, col))
-    # Reverse the path to get the path from source to destination
-    path.reverse()
-
-    # Print the path
-    for i in path:
-        print("->", i, end=" ")
-    print(len(path))
+    
+    if is_part_1:
+        print("Minimum number of steps needed to reach the exit:", len(path)-1)
+    return path
 
 # Implement the A* search algorithm
-
-
-def a_star_search(grid, src, dest):
+def a_star_search(grid, src, dest, is_part_1 = False):
     # Check if the source and destination are valid
     if not is_valid(src[0], src[1]) or not is_valid(dest[0], dest[1]):
         print("Source or destination is invalid")
         return
 
-    #print(grid[src[0]][src[1]], grid[dest[0]][dest[1]])
     # Check if the source and destination are unblocked
     if not is_unblocked(grid, src[0], src[1]) or not is_unblocked(grid, dest[0], dest[1]):
         print("Source or the destination is blocked")
@@ -116,7 +107,6 @@ def a_star_search(grid, src, dest):
         i = p[1]
         j = p[2]
         closed_list[i][j] = True
-        #print(i, j, orientation)
 
         directions = [(0, 1), (1, 0), (-1, 0), (0, -1)]
         # For each direction, check the successors
@@ -132,18 +122,17 @@ def a_star_search(grid, src, dest):
                     cell_details[new_i][new_j].parent_i = i
                     cell_details[new_i][new_j].parent_j = j
 
-                    print("The destination cell is found")
+                    #print("The destination cell is found")
                     # Trace and print the path from source to destination
-                    trace_path(cell_details, dest)
+                    new_path = trace_path(cell_details, dest, is_part_1)
                     found_dest = True
-                    return
+                    return found_dest, new_path
                 else:
                     # Calculate the new f, g, and h values
                     g_new = cell_details[i][j].g + 1.0
                     h_new = calculate_h_value(new_i, new_j, dest)
                     f_new = g_new + h_new
 
-                    #print(f_new, new_i, new_j, new_orient)
                     # If the cell is not in the open list or the new f value is smaller
                     if cell_details[new_i][new_j].f == float('inf') or cell_details[new_i][new_j].f > f_new:
                         # Add the cell to the open list
@@ -157,10 +146,8 @@ def a_star_search(grid, src, dest):
 
     # If the destination is not found after visiting all cells
     if not found_dest:
-        print("Failed to find the destination cell")
-
-# Driver Code
-
+        #print("Failed to find the destination cell")
+        return False, []
 
 def main():
     grid=[['.' for _ in range(COL)] for _ in range(ROW)]
@@ -174,8 +161,19 @@ def main():
     dest = [70, 70]
 
     # Run the A* search algorithm
-    a_star_search(grid, src, dest)
+    path_exist, path = a_star_search(grid, src, dest, is_part_1 = True)
 
+    for element in falling_bytes[1024:]:
+        grid[element[0]][element[1]] = '#'
+
+        if (element[0], element[1]) in path:
+            # Run the A* search algorithm
+            path_exist, path = a_star_search(grid, src, dest)
+            if not path_exist:
+                print("Coordinates of the first byte preventing the exit from being reachable:", str(element[0]) + "," + str(element[1]))
+                break
+    
+    print("Time elapsed:", datetime.now() - init_time)
 
 if __name__ == "__main__":
     main()

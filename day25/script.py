@@ -1,3 +1,7 @@
+from datetime import datetime
+
+init_time = datetime.now()
+
 locks = []
 keys = []
 
@@ -49,4 +53,5 @@ for lock in locks:
                 is_valid = False
         count+= is_valid
 
-print(count)
+print("Time elapsed:", datetime.now() - init_time)
+print("Number of unique lock/key pairs fitting:", count)

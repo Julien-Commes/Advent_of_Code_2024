@@ -64,11 +64,11 @@ for k in range(0,10000):
 image = np.zeros((y_tiles, x_tiles))
 for robot in robots:
     robot_x, robot_y, robot_vx, robot_vy = robot
-    robot_final_x = (robot_x + k * robot_vx) % x_tiles
+    robot_final_x = (robot_x + christmas_tree_iteration * robot_vx) % x_tiles
     if robot_final_x < 0:
         robot_final_x = x_tiles - robot_final_x
 
-    robot_final_y =  (robot_y + k * robot_vy) % y_tiles
+    robot_final_y =  (robot_y + christmas_tree_iteration * robot_vy) % y_tiles
     if robot_final_y < 0:
         robot_final_y = y_tiles - robot_final_y
         
@@ -77,7 +77,7 @@ for robot in robots:
 plt.imshow(image, cmap='gray', interpolation='nearest')
 plt.axis('off')
 
-image_name = "image_bw" + str(k) + ".png"
+image_name = "image_bw" + str(christmas_tree_iteration) + ".png"
 plt.savefig(image_name, bbox_inches='tight', pad_inches=0)
     
 print("Time elapsed:", datetime.now() - init_time)

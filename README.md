@@ -1,5 +1,16 @@
-# Advent_of_Code_2024
+# Advent of Code 2024 - Description
+
+![Completed calendar](completed_calendar.png)
+
 This repository contains the code I wrote to solve the AoC 2024 puzzles.
+
+Currently, all solutions are implemented in Python 3. To run the code for a specific day, please copy your puzzle input into a file named `input.txt` and place it in the corresponding day's folder. For days 5, 15, 19, and 24, you will need to split the input into two separate files (detailed instructions are provided in the day descriptions below).
+
+The code for both parts of each day's puzzle is typically found in the `script.py` file within the respective day's folder. In cases where it was more practical to separate the solutions, the code for part 2 can be found in `script_part2.py`. Additionally, some folders contain naive approaches that I attempted before arriving at the final solution.
+
+Most solutions execute in less than 500 milliseconds on my laptop (Intel i5-12500H, 2500 MHz). However, some may take a few seconds, and part 2 of day 6 currently takes around 1.5 minutes.
+
+# Advent of Code 2024 - Day by day solutions
 
 I will detail here my approach for each day, including the different challenges I encountered and how I overcame them.
 
@@ -24,6 +35,8 @@ The problem of the day involved identifying lines that adhere to a specific orde
 In the second part, the task was to reorder the incorrect lines. To achieve this, I placed each number in the reordered list based on the number of elements that should follow it. The practical approach was to first create a new line filled with zero elements. Then, for each element in the original line, I counted the number of elements that should come after it and placed the element in the k-th empty position in the new line (counting from the end), where k is the number of elements that should follow it.
 
 After review of this solution, I think it could be possible to optimize it by not creating the new line but finding the element that should in the middle using the same method that helped creating a new line.
+
+To run the code, please separate the input into two text files: `input_rules.txt` (containing your list of ordering rules) and `input_updates.txt` (containing your list of updates).
 
 ## Day 6
 
@@ -192,6 +205,8 @@ This way I decided not to form all combinations but to construct all combination
 
 This method made the algorithm find the solution in less than a second!
 
+To run the code, please separate the input into two text files: `input_patterns.txt` (containing your list of desired designs) and `input_towels.txt` (containing your list of available towels).
+
 ## Day 20
 
 The script for today’s problem works for both part 1 and part 2, with the only difference being the maximum length of a cheat (```max_len_cheat``` variable). The approach is straightforward: first, find the path from start to end using an A* search (I choose to use A* as I already had the implementation from day 16 and day 18 available). Then, identify all possible shortcuts up to the specified maximum length that meet the criterion of minimum gained distance.
@@ -221,7 +236,7 @@ This process takes around 7 seconds to run on my laptop, which is not ideal, but
 
 Today's puzzle can be translated into graph theory as finding [cliques](https://en.wikipedia.org/wiki/Clique_(graph_theory)) from a given [edge list](https://en.wikipedia.org/wiki/Edge_list) with specific conditions.
 
-The naive approach is presented in `initial_script.py`. To summarize briefly, we use elements of the list of edges to create sets of three interconnected nodes by comparing the elements with incomplete and already created sets. The issue with this method is that the number of iterations needed to compare one element of the edge list with all created sets constantly increases. Therefore, I decided to look for existing algorithms in graph theory to solve this type of problem.
+The naive approach is presented in `script_naive.py`. To summarize briefly, we use elements of the list of edges to create sets of three interconnected nodes by comparing the elements with incomplete and already created sets. The issue with this method is that the number of iterations needed to compare one element of the edge list with all created sets constantly increases. Therefore, I decided to look for existing algorithms in graph theory to solve this type of problem.
 
 The final approach I decided to follow involved creating an [adjacency matrix](https://en.wikipedia.org/wiki/Adjacency_matrix) from the edge list, then applying a built-in function from the Networkx library (as I have only a basic understanding of graph theory), and finally applying some conditions (only cliques with exactly 3 nodes and one starting with "t", and taking the clique of maximum length).
 
@@ -234,6 +249,8 @@ For part 1, I applied all operations with a system of priority to operations whe
 For part 2, I had to find all resulting wires (i.e., results of operations) that were not well placed, causing the set of operations to not have the desired behavior. Since the puzzle stated that the set of operations should result in adding two binary numbers, I first determined what the set of operations should look like for each digit to produce the expected output. Then, I implemented a protocol to check if this is what the actual set is doing (for each digit) and registered any misplaced resulting wires. I simplified some of the conditions, assuming they would only cover edge cases that were unlikely to be in the puzzle input.
 
 The code is quite long as it needs to check a number of conditions, but it runs 'fast enough' (less than .01 seconds on my laptop).
+
+To run the code, please separate the input into two text files: `input_gates.txt` (containing your gates input) and `input_wires.txt` (containing your list of wires initial value).
 
 ## Day 25
 
